@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Task1_Core.DTOs;
 using Task1_Core.Models;
+using static Task1_Core.SaveImage.SaveImage;
 
 namespace Task1_Core.Controllers
 {
@@ -27,11 +28,21 @@ namespace Task1_Core.Controllers
                 return Ok(categories);
             return NoContent();
         }
+
+        [HttpGet("Calc/{eq}")]
+        public IActionResult getResult(string eq)
+        {
+
+            var op=eq.Split('+');
+            return Ok(Convert.ToDecimal(op[0])+Convert.ToDecimal(op[1]));
+
+
+        }
         [HttpPost]
         public IActionResult CreateCategory([FromForm] DTOsCategory dto)
         {
             //Save the Image on the server
-            SaveImage(dto.CategoryImage);
+            var b=SaveImage1(dto.CategoryImage);
 
             // Create new category
             var category = new Category
@@ -52,29 +63,16 @@ namespace Task1_Core.Controllers
             var oldCategory = _db.Categories.Find(id);
             if (oldCategory == null) return BadRequest();
 
-            SaveImage(dto.CategoryImage);
+           var b= SaveImage1(dto.CategoryImage);
 
             oldCategory.CategoryName = dto.CategoryName;
-            oldCategory.CategoryImage = dto.CategoryImage.FileName;
+            oldCategory.CategoryImage = b;
 
             _db.SaveChanges();
             return Ok(oldCategory);
         }
 
-        static void SaveImage(IFormFile image)
-        {
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var filePath = Path.Combine(uploadsFolder, image.FileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                image.CopyToAsync(fileStream);
-            }
-        }
+    
 
         [HttpGet("GetCategoryByName/{Name}")]
         public IActionResult GetCategoryByName(string Name)

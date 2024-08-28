@@ -4,7 +4,7 @@ namespace Task1_Core.SaveImage
 {
     public class SaveImage
     {
-        public static void SaveImage1(IFormFile image)
+        public static string SaveImage1(IFormFile image)
         {
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
             if (!Directory.Exists(uploadsFolder))
@@ -17,6 +17,8 @@ namespace Task1_Core.SaveImage
             {
                 image.CopyToAsync(fileStream);
             }
+            return (filePath);
         }
+        
     }
 }
