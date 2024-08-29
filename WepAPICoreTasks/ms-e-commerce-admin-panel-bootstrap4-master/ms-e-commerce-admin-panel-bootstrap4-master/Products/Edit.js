@@ -1,8 +1,10 @@
+
+debugger;
 async function EditProduct(event) {
     event.preventDefault();
     let EditID = Number(localStorage.getItem('EditID'));
 
-    const url = `https://localhost:44323/api/Categories/GetCategoryById/${EditID}`;
+    const url = `https://localhost:44323/api/Products/GetCategoryById/${EditID}`;
 var form=document.getElementById("form");
     const formData = new FormData(form);
     console.log(formData);
@@ -20,5 +22,5 @@ var form=document.getElementById("form");
         console.error('Failed to update category:', response.status, response.statusText);
     }
 
-    window.location.href="/Products.html";
+    window.location.href="Products.html";
 }

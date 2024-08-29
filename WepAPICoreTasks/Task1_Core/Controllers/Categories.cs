@@ -107,6 +107,30 @@ namespace Task1_Core.Controllers
             }
             return Ok(category);
         }
+        [HttpGet("{number1}/{number2}")]
+        public IActionResult sum(int number1, int number2)
+        {
+            if (number1 == 30 || number2 == 30)
+            {
+                return Ok(true);
+            }
+            if (number2 + number2 == 30)
+            {
+                return Ok(true);
+
+            }
+            return Ok(false);
+        }
+        [HttpGet("{number1}")]
+        public IActionResult factorila(int number1)
+        {
+            if (number1>0&&(number1%3==0||number1%7==0))
+            {
+                return Ok(true);
+            }
+            
+            return Ok(false);
+        }
         [HttpDelete("{id}")]
         public IActionResult DeleteItem(int id)
         {
