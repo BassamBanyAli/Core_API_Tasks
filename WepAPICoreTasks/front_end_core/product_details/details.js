@@ -1,7 +1,7 @@
 async function fetchProductDetails() {
 
     let ProductID = Number(localStorage.getItem('ProductID'));
-    const url = `https://localhost:44323/api/Products/GetProductByID?id=${ProductID}`;
+    const url = `https://localhost:7167/api/Products/GetProductByID?id=${ProductID}`;
 
 
 
@@ -32,7 +32,7 @@ container.innerHTML=`
 
 
 async function AddToCart() {
-  var url='https://localhost:44323/api/CartItems';
+  var url='https://localhost:7167/api/CartItems';
 
   var quantityInput = document.getElementById("quantityInput").value;
   let ProductID = Number(localStorage.getItem('ProductID'));

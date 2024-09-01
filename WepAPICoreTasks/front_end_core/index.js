@@ -1,6 +1,6 @@
 async function fetchAndDisplayCards() {
     try {
-        const url = 'https://localhost:44323/api/Categories';
+        const url = 'https://localhost:7167/api/Categories';
         const response = await fetch(url);
         const data = await response.json();
 

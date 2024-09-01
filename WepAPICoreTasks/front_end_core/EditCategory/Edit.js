@@ -2,7 +2,7 @@ async function EditCategory(event) {
     event.preventDefault();
     let EditID = Number(localStorage.getItem('EditID'));
 
-    const url = `https://localhost:44323/api/Categories/GetCategoryById/${EditID}`;
+    const url = `https://localhost:7167/api/Categories/GetCategoryById/${EditID}`;
 var form=document.getElementById("form1");
     const formData = new FormData(form);
     console.log(formData);

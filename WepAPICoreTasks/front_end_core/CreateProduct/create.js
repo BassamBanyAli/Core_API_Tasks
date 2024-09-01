@@ -1,6 +1,6 @@
 async function CreateCategory(event) {
     event.preventDefault();
-     var url=`https://localhost:44323/api/Categories`;
+     var url=`https://localhost:7167/api/Categories`;
      var form=document.getElementById("form");
      var formData=new FormData(form);
 

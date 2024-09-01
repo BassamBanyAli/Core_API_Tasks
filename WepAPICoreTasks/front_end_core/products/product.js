@@ -2,7 +2,7 @@ async function fetchAndDisplayProducts() {
     try {
 
         let id = Number(localStorage.getItem('id'));
-        const url = `https://localhost:44323/api/Products/GetProductByCategoryID?id=${id}`;
+        const url = `https://localhost:7167/api/Products/GetProductByCategoryID?id=${id}`;
         
       
         const response = await fetch(url);
