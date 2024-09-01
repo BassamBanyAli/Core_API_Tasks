@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Task1_Core.DTOs;
 using Task1_Core.Models;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Task1_Core.Controllers
 {
@@ -10,12 +13,14 @@ namespace Task1_Core.Controllers
     public class Users : ControllerBase
     {
         private readonly MyDbContext _db;
+        private readonly PasswordHasher<User> _passwordHasher;
 
-        public Users (MyDbContext db)
+        public Users(MyDbContext db, PasswordHasher<User> passwordHasher)
         {
+            _passwordHasher = passwordHasher;
 
-        _db = db; 
-        
+            _db = db;
+
         }
         [HttpGet]
         public IActionResult getAllUsers()
@@ -26,26 +31,77 @@ namespace Task1_Core.Controllers
             return NoContent();
         }
         [HttpPost]
-        public IActionResult CreateProduct([FromForm] DTOsUser dto)
+        public IActionResult CreateUser([FromForm] DTOsUser dto)
         {
-            //Save the Image on the server
-            
+            var hashedPassword = _passwordHasher.HashPassword(new User(), dto.PasswordHash);
 
-            // Create new category
-            var User = new User
+            var user = new User
             {
                 Username = dto.Username,
-                Password = dto.Password,
+                //PasswordHash = hashedPassword,
                 Email = dto.Email
             };
 
-            //Add and save the new catagery
-            _db.Users.Add(User);
+            // Add and save the new user
+            _db.Users.Add(user);
             _db.SaveChanges();
 
-            return Ok(User);
+            return Ok(user);
         }
-        [HttpPut("GetCategoryById/{id}")]
+
+
+
+        [HttpPost("register")]
+        public async Task<ActionResult<User>> Register(UserDTO model)
+        {
+            // Hash the password
+            byte[] passwordHash, passwordSalt;
+            PasswordHasher.CreatePasswordHash(model.Password, out passwordHash, out passwordSalt);
+
+            var user = new User
+            {
+                Username = model.UserName,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                Email = model.Email
+            };
+
+            await _db.Users.AddAsync(user);
+            await _db.SaveChangesAsync();
+
+            return Ok(user);
+        }
+
+        [HttpPost("login")]
+        public IActionResult Login(UserDTO model)
+        {
+            var user = _db.Users.FirstOrDefault(x => x.Username == model.UserName && x.Email == model.Email);
+            if (user == null || !PasswordHasher.VerifyPasswordHash(model.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                return Unauthorized("Invalid username or password.");
+            }
+            // Generate a token or return a success response
+            return Ok("User logged in successfully");
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPut("UpdateUserById/{id}")]
         public IActionResult UpdateUserById([FromForm] DTOsUser dto, int id)
         {
             var oldUser = _db.Users.Find(id);
@@ -53,7 +109,7 @@ namespace Task1_Core.Controllers
 
 
             oldUser.Username = dto.Username;
-            oldUser.Password = dto.Password;
+            //oldUser.PasswordHash = dto.PasswordHash;
             oldUser.Email = dto.Email;
 
             _db.SaveChanges();

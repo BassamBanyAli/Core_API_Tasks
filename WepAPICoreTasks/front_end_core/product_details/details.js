@@ -38,7 +38,7 @@ async function AddToCart() {
   let ProductID = Number(localStorage.getItem('ProductID'));
   var cardId=localStorage.getItem("cardId");
   var productcart={
-    cartId:cardId,
+    cartId:1,
     productId:ProductID,
     quantity:quantityInput
   }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Task1_Core.Models;
@@ -30,8 +31,12 @@ builder.Services.AddCors(options => options.AddPolicy("Development", builder =>
 
 
 );
+builder.Services.AddScoped<PasswordHasher<User>>(); // Register PasswordHasher<User>
 
+// Other service registrations
+builder.Services.AddControllers();
 var app = builder.Build();
+
 app.UseCors("Development");
 
 // Configure the HTTP request pipeline.

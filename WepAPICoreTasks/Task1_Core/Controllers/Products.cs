@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using Task1_Core.DTOs;
 using Task1_Core.Models;
 using  static Task1_Core.SaveImage.SaveImage;
@@ -21,6 +22,16 @@ namespace Task1_Core.Controllers
         public IActionResult getAllProducts()
         {
             var products = _db.Products.Include(p => p.Category).ToList();
+            if (products == null)
+            {
+                return NotFound();
+            }
+            return Ok(products);
+        }
+        [HttpGet("get")]
+        public IActionResult getProducts()
+        {
+            var products = _db.Products.OrderByDescending(x=>x.ProductName).Take(5).ToList();
             if (products == null)
             {
                 return NotFound();
