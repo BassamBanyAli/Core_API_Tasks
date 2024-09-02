@@ -30,29 +30,29 @@ namespace Task1_Core.Controllers
                 return Ok(Users);
             return NoContent();
         }
-        [HttpPost]
-        public IActionResult CreateUser([FromForm] DTOsUser dto)
-        {
-            var hashedPassword = _passwordHasher.HashPassword(new User(), dto.PasswordHash);
+        //[HttpPost]
+        //public IActionResult CreateUser([FromForm] DTOsUser dto)
+        //{
+        //    var hashedPassword = _passwordHasher.HashPassword(new User(), dto.PasswordHash);
 
-            var user = new User
-            {
-                Username = dto.Username,
-                //PasswordHash = hashedPassword,
-                Email = dto.Email
-            };
+        //    var user = new User
+        //    {
+        //        Username = dto.Username,
+        //        //PasswordHash = hashedPassword,
+        //        Email = dto.Email
+        //    };
 
-            // Add and save the new user
-            _db.Users.Add(user);
-            _db.SaveChanges();
+        //    // Add and save the new user
+        //    _db.Users.Add(user);
+        //    _db.SaveChanges();
 
-            return Ok(user);
-        }
+        //    return Ok(user);
+        //}
 
 
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(UserDTO model)
+        public ActionResult Register([FromForm]UserDTO model)
         {
             // Hash the password
             byte[] passwordHash, passwordSalt;
@@ -66,22 +66,27 @@ namespace Task1_Core.Controllers
                 Email = model.Email
             };
 
-            await _db.Users.AddAsync(user);
-            await _db.SaveChangesAsync();
+             _db.Users.AddAsync(user);
+             _db.SaveChangesAsync();
 
             return Ok(user);
         }
 
         [HttpPost("login")]
-        public IActionResult Login(UserDTO model)
+        public IActionResult Login( [FromForm]DTOsLogin model)
         {
-            var user = _db.Users.FirstOrDefault(x => x.Username == model.UserName && x.Email == model.Email);
+            var user = _db.Users.FirstOrDefault(x => x.Email == model.Email);
             if (user == null || !PasswordHasher.VerifyPasswordHash(model.Password, user.PasswordHash, user.PasswordSalt))
             {
                 return Unauthorized("Invalid username or password.");
             }
             // Generate a token or return a success response
             return Ok("User logged in successfully");
+        }
+        [HttpGet("/getname{name}")]
+        public IActionResult GetDetails( string name) { 
+            var user=_db.Users.Where(x=>x.Username == name).FirstOrDefault();
+            return Ok(user);
         }
 
 
