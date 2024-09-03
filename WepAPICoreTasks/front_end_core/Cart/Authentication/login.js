@@ -8,8 +8,11 @@ async function login(event) {
         method: "POST",
         body: formData,
     });
-     if(response.status==200)
+    var result= await response.json();
+     if(response.ok){
+        localStorage.setItem('jwtToken', result.token);
     alert('logged sucessfully');
+}
 else
 alert('Unotharized');
     

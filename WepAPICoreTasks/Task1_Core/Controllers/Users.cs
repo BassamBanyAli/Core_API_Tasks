@@ -5,6 +5,7 @@ using Task1_Core.DTOs;
 using Task1_Core.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Task1_Core.Controllers
 {
@@ -14,10 +15,13 @@ namespace Task1_Core.Controllers
     {
         private readonly MyDbContext _db;
         private readonly PasswordHasher<User> _passwordHasher;
+        private readonly TokenGenerator _tokenGenerator;
 
-        public Users(MyDbContext db, PasswordHasher<User> passwordHasher)
+
+        public Users(MyDbContext db, PasswordHasher<User> passwordHasher, TokenGenerator tokenGenerator)
         {
             _passwordHasher = passwordHasher;
+            _tokenGenerator = tokenGenerator;
 
             _db = db;
 
@@ -52,7 +56,7 @@ namespace Task1_Core.Controllers
 
 
         [HttpPost("register")]
-        public ActionResult Register([FromForm]UserDTO model)
+        public ActionResult Register([FromForm] UserDTO model)
         {
             // Hash the password
             byte[] passwordHash, passwordSalt;
@@ -66,26 +70,29 @@ namespace Task1_Core.Controllers
                 Email = model.Email
             };
 
-             _db.Users.AddAsync(user);
-             _db.SaveChangesAsync();
+            _db.Users.AddAsync(user);
+            _db.SaveChangesAsync();
 
             return Ok(user);
         }
 
         [HttpPost("login")]
-        public IActionResult Login( [FromForm]DTOsLogin model)
+        public IActionResult Login([FromForm] DTOsLogin model)
         {
             var user = _db.Users.FirstOrDefault(x => x.Email == model.Email);
             if (user == null || !PasswordHasher.VerifyPasswordHash(model.Password, user.PasswordHash, user.PasswordSalt))
             {
                 return Unauthorized("Invalid username or password.");
             }
+            var roles = _db.UserRoles.Where(x=>x.User.UserId == user.UserId).Select(ur => ur.Role).ToList();
+            var token = _tokenGenerator.GenerateToken(user.Username, roles);
             // Generate a token or return a success response
-            return Ok("User logged in successfully");
+            return Ok(new { Token = token });
         }
         [HttpGet("/getname{name}")]
-        public IActionResult GetDetails( string name) { 
-            var user=_db.Users.Where(x=>x.Username == name).FirstOrDefault();
+        public IActionResult GetDetails(string name)
+        {
+            var user = _db.Users.Where(x => x.Username == name).FirstOrDefault();
             return Ok(user);
         }
 
@@ -178,6 +185,6 @@ namespace Task1_Core.Controllers
             return NoContent(); // Return the deleted category or a success message
         }
 
-
+     
     }
 }

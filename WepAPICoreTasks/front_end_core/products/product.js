@@ -4,14 +4,21 @@ async function fetchAndDisplayProducts() {
         let id = Number(localStorage.getItem('id'));
         const url = `https://localhost:7167/api/Products/GetProductByCategoryID?id=${id}`;
         
-      
-        const response = await fetch(url);
+      var token=localStorage.getItem("jwtToken");
+      if(token==null)
+        window.location.href="../Cart/Authentication/login.html";
+        const response = await fetch(url,{
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
 
         // Parse JSON data
         const data = await response.json();
+        
 
         // Clear existing content in the container (if needed)
         const container = document.getElementById('card-container');

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace Task1_Core.Controllers
             }
             return Ok(products);
         }
+        [Authorize]
         [HttpGet("get")]
         public IActionResult getProducts()
         {
@@ -75,7 +77,7 @@ namespace Task1_Core.Controllers
             return Ok(oldCategory);
         }
 
-
+        [Authorize]
         [HttpGet("GetProductByID")]
         public IActionResult GetProductByID([FromQuery] int? id)
         {
@@ -93,6 +95,7 @@ namespace Task1_Core.Controllers
             }
             return Ok(product);
         }
+        [Authorize(Roles = "Client")]
         [HttpGet("GetProductByCategoryID")]
         public IActionResult GetProductByCategoryID( [FromQuery] int?id)
         {
